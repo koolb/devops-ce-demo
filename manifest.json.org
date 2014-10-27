@@ -1,0 +1,28 @@
+{
+    "manifest_version": 1,
+    "content_scripts": [ {
+        "exclude_globs":    [ "http://*.bankofamerica.com/Account/LogOn*" ],
+        "include_globs":    [ "*" ],
+        "js":               [ "vendor/desktop-notify.js", "vendor/jQuery-1.11.1.min.js", "dream.user.js" ],
+        "matches":          [ "http://retail-devops.bankofamerica.com/*" ]
+    },  {
+        "exclude_globs":    [ "http://*.bankofamerica.com/Account/LogOn*" ],
+        "include_globs":    [ "*" ],
+        "js":               [ "vendor/desktop-notify.js", "vendor/jQuery-1.11.1.min.js", "drq.user.js" ],
+        "matches":          [ "http://*.bankofamerica.com/RequestQueue*" ]
+    },  {
+        "exclude_globs":    [  "http://*.bankofamerica.com/Account/LogOn*" ],
+        "include_globs":    [ "*" ],
+        "js":               [ "vendor/desktop-notify.js", "vendor/jQuery-1.11.1.min.js", "api.user.js" ],
+        "matches":          [ "http://*.bankofamerica.com/ApplicationPortfolio/Index" ]
+    }],
+    "web_accessible_resources": [ "script.js" ],
+    "description":  "Dream Helper Script",
+    "name":         "Dream Helper",
+    "version":      "1",
+	"browser_action": {
+		"name": "Update",
+		"icons": ["icon.png"],
+		"default_icon": "icon.png"
+	}
+}
