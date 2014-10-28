@@ -29,8 +29,9 @@ url = '/RequestQueue/FindRequestAggregations'
 ##    db.dream.upsert url: url, data: res.body.Data, uts: Date.now()
 #    console.log "inserted #reqs: #{reqs.length}"
 #    console.log "Done."
-$('body').contents().filter(-> @nodeType is 3).each ->
-  console.log "#{@data}"
+logTextData = ->
+	$('body').contents().filter(-> @nodeType is 3).each ->
+  	console.log "#{@data}"
 
 notify = window.notify
 console.log "Window.notify is #{notify}"
