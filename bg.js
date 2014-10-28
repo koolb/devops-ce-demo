@@ -13,7 +13,7 @@
   chrome.pageAction.onClicked.addListener(function(tab) {
     return chrome.tabs.getSelected(null, function(tab) {
       return chrome.tabs.sendRequest(tab.id, {
-        callFunction: "toggleSidebar"
+        callFunction: "toggleSB"
       }, function(response) {
         return console.log(response);
       });

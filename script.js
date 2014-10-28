@@ -29,7 +29,8 @@ function toggleSB() {
     var el = document.getElementById('mySidebar');
     el.parentNode.removeChild(el);
   } else {
-    if (!cssInjected) {
+/*    if (!cssInjected) {
+
       console.log("adding css/styles.css");
       var link = document.createElement("link");
       link.href = chrome.extension.getURL("css/styles.css");
@@ -37,11 +38,12 @@ function toggleSB() {
       link.rel = "stylesheet";
       document.getElementsByTagName("head")[0].appendChild(link);
     }
+*/
     console.log("checking notifications for this page");
     checkReqNotify();
     console.log("adding div");
 
-    var navBar = '<div class="navbar"><div class="navbar-inner"><a class="brand" href="#">JJR@DevOps</a><ul class="nav"><li class="active"><a href="#">Open</a></li><li><a href="#">Servers</a></li><li><a href="#">Users</a></li><li><a href="#">Perms</a></ul></div></div>';
+    var navBar = '<div class="navbar navbar-custom"><div class="navbar-inner"><a class="brand" href="#">JJR@DevOps</a><ul class="nav"><li class="active"><a href="#">Open</a></li><li><a href="#">Servers</a></li><li><a href="#">Users</a></li><li><a href="#">Perms</a></ul></div></div>';
 
     var sbListHead = '<div><h4>Open Requests <span class="badge openCnt">0</span></h1><ul class="nav-list" id="listHead"></ul></div>';
 
@@ -159,7 +161,7 @@ function genTicket() {
 /* assign an avaialable ticket */
 var retryMs = 1000;
 function assnTicket() {
-  var aes = [ "Shailza", "Amit", "Kevin", "John", "Keith", "David", "Mankind", "Waldo", "Tegrat", "Mr Fubar" ]; 
+  var aes = [ "Justin", "Trey", "Surinder", "Saravanan", "Shailza", "Billy", "Kevin", "John", "Keith", "David", "Mankind", "Waldo", "Tegrat", "Mr Fubar" ]; 
   var olderOpen = _(openTickets).filter( function(e) { (+Date.now() - e.ts) > retryMs } );
   if (olderOpen.length < 1)  {
     console.log("No tickets more than " + retryMs + "ms old");
