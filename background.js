@@ -1,4 +1,4 @@
-// #(@)$Id$
+// #(@)$Id: background.js 538 2014-10-29 09:29:33Z knoppix $
 console.log( 'Background.html starting!' );
 	/*Make page action icon available to all tabs  */
 	chrome.tabs.onUpdated.addListener(function(tabId) {

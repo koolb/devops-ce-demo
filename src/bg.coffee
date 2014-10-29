@@ -1,11 +1,12 @@
 # vim:ts=2 expandtab:
-# #(@)$Id$
+# @(#)$Id: bg.coffee 540 2014-10-29 23:27:18Z knoppix $
 # @author: koolb@hotmail.com
 # @description: Demo/fake sidepanel updater
 # @usage: click on open items to see content and check to make it mine!
 #
 # @release state: alpha testing only many functions do not yet exist
 #
+console.log "#(@) $Id: bg.coffee 540 2014-10-29 23:27:18Z knoppix $"
 console.log 'bg.html starting!'
 chrome.tabs.onUpdated.addListener (tabId) -> chrome.pageAction.show tabId
 chrome.tabs.getSelected null, (tab) -> chrome.pageAction.show tab.id

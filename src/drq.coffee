@@ -1,5 +1,5 @@
 "use strict"
-console.log "$Id: drq.coffee 21 2014-10-17 16:57:26Z nbki8qq $"
+console.log "#(@) $Id: drq.coffee 537 2014-10-29 09:28:11Z knoppix $"
 console.log "Loaded #{__dirname}/#{__filename}: URL: #{document.URL}"
 mm       = require 'minimongo'
 cheerio  = require 'cheerio'

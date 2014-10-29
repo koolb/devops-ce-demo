@@ -1,6 +1,6 @@
 # vim:expandtab:ts=2:
 "use strict"
-console.log "$Id$"
+console.log "#(@) $Id: script.coffee 537 2014-10-29 09:28:11Z knoppix $"
 console.log "Loaded #{__dirname}/#{__filename}: URL: #{document.URL}"
 
 injectJs = ->

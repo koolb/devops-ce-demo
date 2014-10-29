@@ -1,5 +1,5 @@
 'use strict'
-# $Id: Gruntfile.coffee 17 2014-10-17 16:07:54Z nbki8qq $
+# #(@) $Id: Gruntfile.coffee 540 2014-10-29 23:27:18Z knoppix $
 module.exports = (grunt)->
 
   # load all grunt tasks
@@ -115,10 +115,10 @@ module.exports = (grunt)->
 
   # tasks.
 
-  grunt.registerTask 'compile', [ 'coffeelint', 'coffee' ]
+  grunt.registerTask 'compile', [ 'coffeelint', 'coffee', 'copy' ]
   grunt.registerTask 'browserify', ['browserifying:dream', 'browserifying:drq', 'browserifying:api', 'browserifying:script']
   grunt.registerTask 'test', [ 'simplemocha' ]
 
-  grunt.registerTask 'default', [ 'clean', 'compile', 'browserify', 'test', 'watch' ]
+  grunt.registerTask 'default', [ 'clean', 'compile', 'browserify', 'copy', 'test', 'watch' ]
 
 # vim: se ts=2 expandtab:
