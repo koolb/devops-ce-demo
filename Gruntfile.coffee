@@ -11,9 +11,11 @@ module.exports = (grunt)->
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
-    clean: ['out/']
+    clean: ['tmp/', '*.user.*' ]
     coffeelint:
       gruntfile: src: '<%= [ coffee.gruntfile.src ] %>', cwd: './'
+      bg:        src: '<%= [ coffee.bg.src ]%>'
+      demo:      src: '<%= [ coffee.demo.src ]%>'
       drq:       src: '<%= [ coffee.drq.src ]%>'
       api:       src: '<%= [ coffee.api.src ]%>'
       dream:     src: '<%= [ coffee.dream.src ]%>'
@@ -26,41 +28,52 @@ module.exports = (grunt)->
         max_line_length:
           level: 'ignore'
     coffee:
-      gruntfile:          cwd:  './', src: [ 'Gruntfile.coffee' ], dest: './Gruntfile.js',ext:  '.js'
-      dream:              cwd:  './', src: [ 'src/dream.coffee' ], dest: './out/dream.js',ext:  '.js'
-      drq:                cwd:  './', src: [ 'src/drq.coffee' ],   dest: './out/drq.js',  ext:  '.js'
-      api:                cwd:  './', src: [ 'src/api.coffee' ],   dest: './out/api.js',  ext:  '.js'
-      script:             cwd:  './', src: [ 'src/script.coffee' ],dest: './out/script.js',ext:  '.js'
-      lib:  expand: true, cwd: './src',src:['lib/**/*.coffee'],    dest: './out',         ext: '.js'
-      test: expand: true, cwd: './src',src:['test/**/*.coffee'],  dest: './out',          ext: '.js'
+      gruntfile: cwd:  './', src: [ 'Gruntfile.coffee' ], dest: './Gruntfile.js', ext:  '.js'
+      bg:        cwd:  './', src: [ 'src/bg.coffee' ],    dest: './tmp/bg.js',    ext:  '.js'
+      demo:      cwd:  './', src: [ 'src/demo.coffee' ],  dest: './tmp/demo.js',  ext:  '.js'
+      dream:     cwd:  './', src: [ 'src/dream.coffee' ], dest: './tmp/dream.js', ext:  '.js'
+      drq:       cwd:  './', src: [ 'src/drq.coffee' ],   dest: './tmp/drq.js',   ext:  '.js'
+      api:       cwd:  './', src: [ 'src/api.coffee' ],   dest: './tmp/api.js',   ext:  '.js'
+      script:    cwd:  './', src: [ 'src/script.coffee' ],dest: './tmp/script.js',ext:  '.js'
+      lib:       cwd: './src',src:['lib/**/*.coffee'],    dest: './tmp',          ext:  '.js', expand: true
+      test:      cwd: './src',src:['test/**/*.coffee'],   dest: './tmp',          ext:  '.js', expand: true
     simplemocha:
       all:
-        src: [ 'node_modules/should/should.js', 'out/test/**/*.js' ]
+        src: [ 'node_modules/should/should.js', 'tmp/test/**/*.js' ]
         options:
           globals: ['should']
           timeout: 3000
           ignoreLeaks: false
           ui: 'bdd'
           reporter: 'spec'
+    copy:
+      bg:   src: ['tmp/bg.js'],   dest: './bg.user.js'
+      demo: src: ['tmp/demo.js'], dest: './demo.user.js'
     browserifying:
       dream:
         options: watch: false, debug: true
-        files: './dream.user.js': './out/dream.js'
+        files: './dream.user.js': './tmp/dream.js'
       drq:
         options: watch: false, debug: true
-        files: './drq.user.js': './out/drq.js'
+        files: './drq.user.js': './tmp/drq.js'
       api:
         options: watch: false, debug: true
-        files: './api.user.js': './out/api.js'
+        files: './api.user.js': './tmp/api.js'
       script:
         options: watch: false, debug: true
-        files: './script.js': './out/script.js'
+        files: './script.user.js': './tmp/script.js'
     watch:
       options:
         spawn: false
       gruntfile:
         files: [ 'Gruntfile.coffee' ]
         tasks: [ 'coffeelint:gruntfile', 'coffee:gruntfile', 'default']
+      bg:
+        files: [ 'src/bg.coffee' ]
+        tasks: [ 'coffeelint:bg', 'coffee:bg', 'copy:bg']
+      demo:
+        files: [ 'src/demo.coffee' ]
+        tasks: [ 'coffeelint:demo', 'coffee:demo', 'copy:demo']
       dream:
         files: [ 'src/dream.coffee' ]
         tasks: [ 'coffeelint:dream', 'coffee:dream', 'browserifying:dream']

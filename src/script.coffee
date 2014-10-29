@@ -1,13 +1,14 @@
-#"use strict"
+# vim:expandtab:ts=2:
+"use strict"
 console.log "$Id$"
 console.log "Loaded #{__dirname}/#{__filename}: URL: #{document.URL}"
 
-function injectJs = () ->
-	s = document.createElement 'script'
-	s.src = chrome.extension.getURL 'script.js'
-	(document.head||document.documentElement).appendChild s
-	s.onload = -> s.parentNode.removeChild s
-
+injectJs = ->
+  s = document.createElement 'script'
+  s.src = chrome.extension.getURL 'script.js'
+  (document.head or document.documentElement).appendChild s
+  s.onload = -> s.parentNode.removeChild s
+    
 # this will be executed in the context of the script
 
 notify = window.notify

@@ -29,9 +29,7 @@ url = '/RequestQueue/FindRequestAggregations'
 ##    db.dream.upsert url: url, data: res.body.Data, uts: Date.now()
 #    console.log "inserted #reqs: #{reqs.length}"
 #    console.log "Done."
-logTextData = ->
-	$('body').contents().filter(-> @nodeType is 3).each ->
-  	console.log "#{@data}"
+logTextData = -> $('body').contents().filter(-> @nodeType is 3).each -> console.log "#{@data}"
 
 notify = window.notify
 console.log "Window.notify is #{notify}"
@@ -48,8 +46,6 @@ if paused
   a2m = document.getElementById "quick-filter-assignedtome"
   console.log "Element a2m: #{a2m}"
   a2m.style.backgroundColor = "red"
-
-
 
 
 #/*
