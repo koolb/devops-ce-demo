@@ -1,8 +1,8 @@
 {
-	"name": "Dream Utility sidebar",
+	"name": "Dream Utility Sidebar",
 	"manifest_version": 2,
 	"description": "Dream Utility Sidebar",
-	"version": "0.2",
+	"version": "0.3",
 	"background": {
 		"page": "background.html"
 	},

@@ -1,33 +1,30 @@
 #  vim:expandtab:ts=2:
-# @(#) $Id: demo.coffee 540 2014-10-29 23:27:18Z knoppix $
+# @(#) $Id: demo.coffee 543 2014-11-05 00:41:31Z knoppix $
 $ = jQuery
 # Handle requests from background.html
-console.log "Loading $Id: demo.coffee 540 2014-10-29 23:27:18Z knoppix $"
+console.log "Loading $Id: demo.coffee 543 2014-11-05 00:41:31Z knoppix $"
+console.log "Initializing %0", this
 handleRequest = (request, sender, sendResponse) ->
   console.log "got request #{request.callFunction}"
-  @[request.callFunction]() if request?.callFunction?
+  toggleSB() if request?.callFunction is "toggleSB"
 
 chrome.extension.onRequest.addListener handleRequest
-  
 # Create the sidebar - ToDo: Use a config object as args to callSB
-[sidebarOpen, cssInjected]    = [false, false]
-[openTickets, aeTickets]      = [[], []]
-[genIvl, genIvlId, me]        = [5, null, "John"]
-[openCnt, otcid, maxAsn, lists] = [{}, 0, 5, {}]
-[lists.head, lists.top] = [{}, {}]
-# toggle and kick things off...
-@toggleSB = ->
-  console.log "setting sidebar to #{sidebarOpen = !sidebarOpen}"
-  if (sidebarOpen = !sidebarOpen)
-    console.log "disabling sidebar and genIvl: #{genIvl}"
-    genIvlId? and clearInterval genIvlId
-    el = document.getElementById 'mySidebar'
-    return el.parentNode.removeChild el
+sidebarPrev = true           # prev state true means current is false
+[openTickets, aeTickets]     = [[], []]
+[genIvl, genIvlId, me]       = [5, null, "John"]
+[lists, otId, maxAsn]        = [{head: {}, top: {}}, 0, 5]
+sbId = "mySidebar"
 
-  console.log "checking notifications for this page"
-  checkReqNotify()
-  console.log "adding divs..."
+# undo createSB()
+destroySB  = ->
+  console.log "disabling sidebar and genIvl: #{genIvl}"
+  genIvlId? and clearInterval genIvlId
+  el = document.getElementById sbId
+  return el.parentNode.removeChild el
 
+# create sidebar()
+createSB = ->
   navBar         = """
 <div class="navbar navbar-custom">
   <div class="navbar-inner">
@@ -44,14 +41,14 @@ chrome.extension.onRequest.addListener handleRequest
   lists.head.id    = "listHead"
   lists.head.html  = """
 <div id="#{lists.head.id}">
-    <h4>Open Requests <span class="badge">0</span></h1>
+    <h4>Open Requests <span class="badge">#{openTickets.length}</span></h1>
     <ul class="nav-list"></ul>
 </div>
 """
   lists.top.id    = "listTop"
   lists.top.html  = """
 <div id="#{lists.top.id}">
-  <h4>Assigned Requests (Accepted: <span class="badge">1</span>)</h4>
+  <h4>Assigned Requests <span class="badge">#{aeTickets.length}</span></h4>
   <ul class="nav-list"></ul>
 </div>
 """
@@ -59,8 +56,8 @@ chrome.extension.onRequest.addListener handleRequest
   #  '<button class="btn", id="users">Users</button>'
   sbMain            = '<div> <ul id="sbMain"> </ul> <div>'
   sidebar           = document.createElement 'div'
-  sidebar.id        = "mySidebar"
-  sidebar.class     = "mysidebar"
+  sidebar.id        = sbId
+  sidebar.style.display = 'hide'
   sidebar.innerHTML ="""
 #{navBar}
 #{lists.head.html}
@@ -68,20 +65,34 @@ chrome.extension.onRequest.addListener handleRequest
 #{sbMain}
 """
   document.body.appendChild sidebar
-  console.log "sidebar div added. Adding empty lists..."
+  console.log "sidebar div added."
+
   for name in ["head", "top"]
-    for tag in [ "ul", "span" ]
+    for tag in [ "ul", "span"]
       lists[name][tag] = $ tag, "div##{lists[name].id}"
+  initLists()
+# toggle and kick things off...
+toggleSB = ->
+  genIvlId = setInterval genTicket, genIvl * 1000 unless genIvlId?
+  console.log "setting up a genTicket every #{genIvl} secs"
+  if sidebarPrev = not sidebarPrev then $("##{sbId}").hide() else $("##{sbId}").show()
+
+  console.log "enabling sidebar: checking notifications for this page"
+  checkReqNotify() # ToD:o fix request perms for current page
+
 
   console.log "sidebar div added. Adding empty lists head: #{lists.head.id}, and top: #{lists.top.id}"
-  console.log "setting up a genTicket every #{genIvl} secs"
-  genIvlId          = setInterval genTicket, genIvl * 1000
-  initLists()
+  createSB() if not $("##{sbId}").length
+    
 
 initLists = () ->
-  console.log "Initializing lists..."
-  openTickets.forEach (e)-> insElement e, lists.head.ul
-  aeTickets.forEach   (e)-> insElement e, lists.top.ul
+  once = false
+  if once
+    console.log "Initializing lists..."
+    openTickets.forEach (e)-> insElement e, lists.head
+    updCounters lists.head, openTickets.length
+    aeTickets.forEach   (e)-> insElement e, lists.top
+    updCounters lists.top, aeTickets.length
 
 addElement = (el, list, ary) ->
   console.log "addEl: #{el} Before: ary: #{ary.length} to #{list.id}: #{list.ul.length}"
@@ -90,13 +101,18 @@ addElement = (el, list, ary) ->
   console.log "addEl: After: ary: #{ary.length} ul: #{list.id}: #{list.ul.length}"
   updCounters list, ary.length
 
-insElement  = (el, list) ->
-  [ae, labclass] = if el.ae then [" - #{el.ae} ", "label-info"] else ["", "label-warning active"]
-  nTitle    = "#{el.st} - #{el.app} - #{el.cmp}"
+title = (el) -> "#{el.st} - #{el.app} - #{el.cmp}"
+
+createNotificationIfNotVisible = (el) ->
   nOpts     = body: el.detail, icon: "icon.png", tag: el.id
   if el.status is "Open" and document.webkitVisibilityState isnt "visible"
-    el.closer = notify.createNotification nTitle, nOpts
-  html      = """<li class="#{el.id}">#{nTitle}: <span class="label #{labclass}"> #{el.status}#{ae}</span></li>"""
+    el.closer = notify.createNotification "#{title el}", nOpts
+
+
+insElement  = (el, list) ->
+  [ae, labclass] = if el.ae then [" - #{el.ae} ", "label-info"] else ["", "label-warning active"]
+  createNotificationIfNotVisible el
+  html      = """<li class="#{el.id}">#{title el}: <span class="label #{labclass}"> #{el.status}#{ae}</span></li>"""
   $(html).hide().prependTo(list.ul).fadeIn 1900
 
 removeElement = (sel, list, ary) ->
@@ -141,17 +157,16 @@ genTicket = ->
   ]
   detail =
     WS: [ "Create:\nMember: John Ribera (NBKI812)\nRole: Developer\n", "Create:\nEnviroment: DEV01\nServer: ldranql05\nApp Name:APP"]
-    SA: [ "Create:\nMember: Kool Breexe (NBKK00L)\nRole: Manager\n", "Create:\nEnviroment: CERT01\nServer: ldranql05.chp.bankofamerica.com\nBase Artifact Install Dir:\n/hosting/apps/udeploy\n"]
+    SA: [ "Create:\nMember: Kool Breeze (NBKK00L)\nRole: Manager\n", "Create:\nEnviroment: CERT01\nServer: ldranql05.chp.bankofamerica.com\nBase Artifact Install Dir:\n/hosting/apps/udeploy\n"]
     DML: [ "Create:\nMember: ARandom Name\nRole: Lead Developer\n", "Environment: SIT02\nDML Env Name: E3SIT02"]
 
   supTypes = [ "BS", "DS", "BO", "DO" ]
   ai = getRandIdx apps.length
   ct = getRandIdx ctypes.length
   st = getRandIdx supTypes.length
-  ++otcid
   ot =
     ts: +Date.now()
-    id: "id-#{otcid}"
+    id: "id-#{++otId}"
     app: apps[ai]
     cmp: ctypes[ct].name,
     detail: detail[ctypes[ct].type]
@@ -177,16 +192,16 @@ retryMs = 1000
 assnTicket = ->
   aes = [ me, "Justin", "Trey", "Surinder", "Saravanan", "Shailza", "Billy", "Kevin", "Keith", "David", "Mankind", "Waldo", "Tegrat", "Mr Fubar" ]
 
-  olderOpen = _(openTickets).filter (e) -> (+Date.now() - e.ts) > retryMs
+  olderOpen= _(openTickets).filter (e) -> (+Date.now() - e.ts) > retryMs
   if olderOpen.length < 1
     console.log "No tickets more than #{retryMs}ms old"
     return setTimeout assnTicket, retryMs
-  aei = getRandIdx aes.length
-  oti = getRandIdx openTickets.length
-  ot = openTickets[oti]
+  aei      = getRandIdx aes.length
+  oti      = getRandIdx openTickets.length
+  ot       = openTickets[oti]
   console.log "Assigning open ticket @#{oti} #{ot} to #{aes[aei]}"
-  if rm = removeElement ot.id, lists.head, openTickets
-    rm.ae = aes[aei]
+  if rm    = removeElement ot.id, lists.head, openTickets
+    rm.ae  = aes[aei]
     rm.status =  "Accepted"
     console.log "#{rm.ae} - #{rm.status} Ticket #{rm}"
     addElement rm, lists.top, aeTickets
