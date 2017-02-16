@@ -190,7 +190,7 @@ cleanAssigned = ->
 # assign an avaialable ticket
 retryMs = 1000
 assnTicket = ->
-  aes = [ me, "Justin", "Trey", "Surinder", "Saravanan", "Shailza", "Billy", "Kevin", "Keith", "David", "Mankind", "Waldo", "Tegrat", "Mr Fubar" ]
+  aes = [ me, "Prudhvi", "Gregory", "Dan", "Hemal", "Shailza", "Billy", "John", "Jennifer", "David", "Koyt", "Waldo", "Kripa", "Amit" ]
 
   olderOpen= _(openTickets).filter (e) -> (+Date.now() - e.ts) > retryMs
   if olderOpen.length < 1
