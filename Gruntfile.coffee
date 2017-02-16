@@ -49,7 +49,7 @@ module.exports = (grunt)->
     copy:
       bg:   src: ['tmp/bg.js'],   dest: './bg.user.js'
       demo: src: ['tmp/demo.js'], dest: './demo.user.js'
-    browserifying:
+    browserify:
       dream:
         options: watch: false, debug: true
         files: './dream.user.js': './tmp/dream.js'
@@ -76,16 +76,16 @@ module.exports = (grunt)->
         tasks: [ 'coffeelint:demo', 'coffee:demo', 'copy:demo']
       dream:
         files: [ 'src/dream.coffee' ]
-        tasks: [ 'coffeelint:dream', 'coffee:dream', 'browserifying:dream']
+        tasks: [ 'coffeelint:dream', 'coffee:dream', 'browserify:dream']
       drq:
         files: [ 'src/drq.coffee' ]
-        tasks: [ 'coffeelint:drq', 'coffee:drq', 'browserifying:drq']
+        tasks: [ 'coffeelint:drq', 'coffee:drq', 'browserify:drq']
       api:
         files: [ 'src/api.coffee' ]
-        tasks: [ 'coffeelint:api', 'coffee:api', 'browserifying:api']
+        tasks: [ 'coffeelint:api', 'coffee:api', 'browserify:api']
       script:
         files: [ 'src/script.coffee' ]
-        tasks: [ 'coffeelint:script', 'coffee:script', 'browserifying:script']
+        tasks: [ 'coffeelint:script', 'coffee:script', 'browserify:script']
       lib:
         files: [ 'src/lib/**/*.coffee']
         tasks: [ 'coffeelint:lib', 'coffee:lib', 'simplemocha']
@@ -111,12 +111,12 @@ module.exports = (grunt)->
 
   # if grunt.config.watchify?.target?
   #   grung.config.watchify.files = files
-  #   grunt.config [ 'watchify', target], browserifying[target]
+  #   grunt.config [ 'watchify', target], browserify[target]
 
   # tasks.
 
   grunt.registerTask 'compile', [ 'coffeelint', 'coffee', 'copy' ]
-  grunt.registerTask 'browserify', ['browserifying:dream', 'browserifying:drq', 'browserifying:api', 'browserifying:script']
+  grunt.registerTask 'browserify', ['browserify:dream', 'browserify:drq', 'browserify:api', 'browserify:script']
   grunt.registerTask 'test', [ 'simplemocha' ]
 
   grunt.registerTask 'default', [ 'clean', 'compile', 'browserify', 'copy', 'test', 'watch' ]
